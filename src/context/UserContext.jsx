@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { INITIAL_USERS } from '../data/mockUsers';
+import api from '../api/axios';
 
 const UserContext = createContext();
 
@@ -25,11 +26,30 @@ export const UserProvider = ({ children }) => {
   const [viewingUser, setViewingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [apiConnected, setApiConnected] = useState(false);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('admin_theme') || 'dark';
   });
 
-  // Save users to localStorage whenever users state changes
+  // Fetch users from Railway API on mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await api.get('/users');
+        const fetchedData = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+        if (fetchedData && fetchedData.length > 0) {
+          setUsers(fetchedData);
+          setApiConnected(true);
+        }
+      } catch (err) {
+        console.warn("Backend API unavailable or empty, using cached/mock users:", err.message);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // Save users to localStorage as local cache fallback
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
@@ -61,7 +81,7 @@ export const UserProvider = ({ children }) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  const addUser = (userData) => {
+  const addUser = async (userData) => {
     const newUser = {
       ...userData,
       id: `usr_${Date.now()}`,
@@ -70,21 +90,50 @@ export const UserProvider = ({ children }) => {
       avatar: userData.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userData.name)}`
     };
 
+    // Update state locally first (optimistic UI)
     setUsers(prev => [newUser, ...prev]);
+
+    // Send API POST request to Railway Laravel backend
+    try {
+      const res = await api.post('/users', newUser);
+      if (res.data && res.data.data) {
+        const savedApiUser = res.data.data;
+        setUsers(prev => prev.map(u => u.id === newUser.id ? { ...newUser, ...savedApiUser } : u));
+      }
+    } catch (err) {
+      console.error("Failed to save user to API:", err);
+    }
+
     addToast(`User "${newUser.name}" has been created successfully.`, 'success', 'User Created');
     setIsCreateModalOpen(false);
   };
 
-  const updateUser = (id, updatedData) => {
+  const updateUser = async (id, updatedData) => {
     setUsers(prev => prev.map(u => u.id === id ? { ...u, ...updatedData } : u));
+
+    // Send API PUT request to Railway Laravel backend
+    try {
+      await api.put(`/users/${id}`, updatedData);
+    } catch (err) {
+      console.error("Failed to update user on API:", err);
+    }
+
     addToast(`User "${updatedData.name || 'information'}" updated successfully.`, 'success', 'User Updated');
     setEditingUser(null);
   };
 
-  const deleteUser = (id) => {
+  const deleteUser = async (id) => {
     const target = users.find(u => u.id === id);
     setUsers(prev => prev.filter(u => u.id !== id));
     setSelectedUserIds(prev => prev.filter(selectedId => selectedId !== id));
+
+    // Send API DELETE request to Railway Laravel backend
+    try {
+      await api.delete(`/users/${id}`);
+    } catch (err) {
+      console.error("Failed to delete user on API:", err);
+    }
+
     if (target) {
       addToast(`User "${target.name}" was permanently deleted.`, 'danger', 'User Deleted');
     }
@@ -93,6 +142,10 @@ export const UserProvider = ({ children }) => {
 
   const bulkDeleteUsers = () => {
     const count = selectedUserIds.length;
+    selectedUserIds.forEach(id => {
+      api.delete(`/users/${id}`).catch(err => console.error("Bulk delete error:", err));
+    });
+
     setUsers(prev => prev.filter(u => !selectedUserIds.includes(u.id)));
     setSelectedUserIds([]);
     addToast(`${count} users have been deleted from the system.`, 'danger', 'Bulk Deletion Complete');
@@ -100,6 +153,10 @@ export const UserProvider = ({ children }) => {
   };
 
   const bulkChangeStatus = (newStatus) => {
+    selectedUserIds.forEach(id => {
+      api.put(`/users/${id}`, { status: newStatus }).catch(err => console.error("Status update error:", err));
+    });
+
     setUsers(prev => prev.map(u => selectedUserIds.includes(u.id) ? { ...u, status: newStatus } : u));
     addToast(`Status of ${selectedUserIds.length} users updated to ${newStatus}.`, 'info', 'Status Batch Updated');
     setSelectedUserIds([]);
@@ -131,6 +188,7 @@ export const UserProvider = ({ children }) => {
       users,
       toasts,
       theme,
+      apiConnected,
       toggleTheme,
       addToast,
       removeToast,
