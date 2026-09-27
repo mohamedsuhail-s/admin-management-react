@@ -1,0 +1,57 @@
+import React, { useState } from 'react';
+import { UserProvider } from './context/UserContext';
+import { Sidebar } from './components/Sidebar';
+import { Header } from './components/Header';
+import { UserManagementView } from './components/UserManagementView';
+import { ToastContainer } from './components/ToastContainer';
+
+const AppContent = () => {
+  const [activeMenu, setActiveMenu] = useState('users'); // Default menu set to User Management
+  const [searchGlobal, setSearchGlobal] = useState('');
+
+  return (
+    <div className="app-container">
+      {/* Sidebar with highlighted User Management single main menu */}
+      <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+
+      <div className="main-content">
+        {/* Header Navigation */}
+        <Header 
+          activeMenu={activeMenu} 
+          searchGlobal={searchGlobal} 
+          setSearchGlobal={setSearchGlobal} 
+        />
+
+        {/* Dynamic Content View */}
+        {activeMenu === 'users' ? (
+          <UserManagementView searchGlobal={searchGlobal} />
+        ) : (
+          <div className="dashboard-body" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+            <div className="table-card empty-state" style={{ maxWidth: '480px', width: '100%' }}>
+              <h4>{activeMenu.toUpperCase()} View</h4>
+              <p>You can switch back to <b>User Management</b> using the menu on the left to perform full Create, Edit, and Delete operations on system users.</p>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => setActiveMenu('users')}
+                style={{ marginTop: '12px' }}
+              >
+                Go to User Management Menu
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Floating Notifications */}
+      <ToastContainer />
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
+  );
+}
