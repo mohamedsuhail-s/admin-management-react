@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { 
-  Shield, 
+  User, 
   Mail, 
   Lock, 
-  User, 
   Eye, 
   EyeOff, 
   LogIn, 
   UserPlus, 
   Building, 
   Phone, 
-  AlertCircle, 
-  CheckCircle,
-  Sparkles,
-  ArrowRight
+  AlertCircle,
+  ArrowRight,
+  ChevronDown,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useUsers } from '../context/UserContext';
@@ -44,7 +43,7 @@ export const AuthPage = () => {
 
   const validate = () => {
     const errs = {};
-    if (!formData.email) errs.email = 'Email is required';
+    if (!formData.email) errs.email = 'Email or username is required';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Invalid email format';
 
     if (!formData.password) errs.password = 'Password is required';
@@ -91,364 +90,541 @@ export const AuthPage = () => {
     <div style={{
       minHeight: '100vh',
       width: '100vw',
+      backgroundColor: '#867d7a',
+      background: 'linear-gradient(135deg, #7c726e 0%, #59504c 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'var(--bg-main)',
-      background: 'radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.15), transparent 70%), radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1), transparent 60%), var(--bg-main)',
       padding: '24px',
-      position: 'relative',
-      overflow: 'hidden'
+      fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
+      boxSizing: 'border-box'
     }}>
       
-      {/* Background Decorative Elements */}
-      <div style={{
-        position: 'absolute',
-        top: '-10%',
-        left: '-10%',
-        width: '400px',
-        height: '400px',
-        borderRadius: '50%',
-        background: 'rgba(99, 102, 241, 0.08)',
-        filter: 'blur(80px)',
-        pointerEvents: 'none'
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: '-10%',
-        right: '-10%',
-        width: '450px',
-        height: '450px',
-        borderRadius: '50%',
-        background: 'rgba(6, 182, 212, 0.08)',
-        filter: 'blur(100px)',
-        pointerEvents: 'none'
-      }} />
-
-      {/* Card Container */}
+      {/* Main Container */}
       <div style={{
         width: '100%',
-        maxWidth: '460px',
-        backgroundColor: 'var(--bg-card)',
-        border: '1px solid var(--border-muted)',
-        borderRadius: 'var(--radius-lg)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.1)',
-        backdropFilter: 'blur(16px)',
+        maxWidth: '1240px',
+        minHeight: '680px',
+        backgroundColor: '#181514',
+        borderRadius: '32px',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        boxShadow: '0 30px 60px rgba(0, 0, 0, 0.45)',
         overflow: 'hidden',
-        zIndex: 10,
-        animation: 'fadeIn 0.4s ease-out'
+        position: 'relative'
       }}>
-        
-        {/* Header Header Brand */}
+
+        {/* LEFT PANEL - DARK SIDE (INSPIRED BY REFERENCE) */}
         <div style={{
-          padding: '32px 32px 24px',
-          textAlign: 'center',
-          borderBottom: '1px solid var(--border-subtle)',
-          position: 'relative'
+          padding: '48px 56px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          position: 'relative',
+          backgroundColor: '#161313',
+          overflow: 'hidden'
         }}>
+          {/* Top Tagline */}
           <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 10px 20px var(--accent-glow)',
-            marginBottom: '16px'
+            fontSize: '0.85rem',
+            color: '#a39b98',
+            letterSpacing: '0.01em',
+            fontWeight: 400
           }}>
-            <Shield size={30} color="#FFFFFF" />
+            Global management made simple – online solutions for you.
           </div>
 
-          <h2 style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
-            Admin Management
-          </h2>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '6px', marginBottom: 0 }}>
-            {mode === 'login' ? 'Welcome back! Sign in to access your dashboard' : 'Create a new admin account to get started'}
-          </p>
-
-          {/* Mode Switcher Tabs */}
-          <div style={{
-            display: 'flex',
-            marginTop: '24px',
-            backgroundColor: 'var(--bg-input)',
-            padding: '4px',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--border-subtle)'
-          }}>
-            <button
-              type="button"
-              onClick={() => { setMode('login'); setValidationErrors({}); }}
-              style={{
-                flex: 1,
-                padding: '10px 16px',
-                border: 'none',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                backgroundColor: mode === 'login' ? 'var(--accent-primary)' : 'transparent',
-                color: mode === 'login' ? '#FFFFFF' : 'var(--text-muted)',
-                boxShadow: mode === 'login' ? '0 4px 12px var(--accent-glow)' : 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              <LogIn size={16} />
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => { setMode('register'); setValidationErrors({}); }}
-              style={{
-                flex: 1,
-                padding: '10px 16px',
-                border: 'none',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                backgroundColor: mode === 'register' ? 'var(--accent-primary)' : 'transparent',
-                color: mode === 'register' ? '#FFFFFF' : 'var(--text-muted)',
-                boxShadow: mode === 'register' ? '0 4px 12px var(--accent-glow)' : 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              <UserPlus size={16} />
-              Sign Up
-            </button>
-          </div>
-        </div>
-
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} style={{ padding: '28px 32px 32px' }}>
-
-          {/* Global Backend Auth Error */}
-          {authError && (
-            <div style={{
-              marginBottom: '20px',
-              padding: '12px 16px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--accent-danger-bg)',
-              border: '1px solid var(--accent-danger)',
-              color: 'var(--accent-danger)',
-              fontSize: '0.875rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
-              <AlertCircle size={18} style={{ flexShrink: 0 }} />
-              <span>{authError}</span>
-            </div>
-          )}
-
-          {/* Register: Full Name */}
-          {mode === 'register' && (
-            <div className="form-group" style={{ marginBottom: '18px' }}>
-              <label className="form-label">Full Name</label>
-              <div className="input-with-icon">
-                <User size={18} className="input-icon" />
-                <input
-                  type="text"
-                  name="name"
-                  className={`form-input ${validationErrors.name ? 'input-error' : ''}`}
-                  placeholder="e.g. Alex Morgan"
-                  value={formData.name}
-                  onChange={handleChange}
-                />
-              </div>
-              {validationErrors.name && <span className="field-error">{validationErrors.name}</span>}
-            </div>
-          )}
-
-          {/* Email Address */}
-          <div className="form-group" style={{ marginBottom: '18px' }}>
-            <label className="form-label">Email Address</label>
-            <div className="input-with-icon">
-              <Mail size={18} className="input-icon" />
-              <input
-                type="email"
-                name="email"
-                className={`form-input ${validationErrors.email ? 'input-error' : ''}`}
-                placeholder="admin@example.com"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            {validationErrors.email && <span className="field-error">{validationErrors.email}</span>}
-          </div>
-
-          {/* Register: Department & Phone */}
-          {mode === 'register' && (
-            <>
-              <div className="form-group" style={{ marginBottom: '18px' }}>
-                <label className="form-label">Department</label>
-                <div className="input-with-icon">
-                  <Building size={18} className="input-icon" />
-                  <select
-                    name="department"
-                    className="form-input"
-                    value={formData.department}
-                    onChange={handleChange}
-                  >
-                    <option value="Engineering">Engineering</option>
-                    <option value="Product">Product</option>
-                    <option value="Design">Design</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Sales">Sales</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group" style={{ marginBottom: '18px' }}>
-                <label className="form-label">Phone Number (Optional)</label>
-                <div className="input-with-icon">
-                  <Phone size={18} className="input-icon" />
-                  <input
-                    type="text"
-                    name="phone"
-                    className="form-input"
-                    placeholder="+1 (555) 019-2834"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Password */}
-          <div className="form-group" style={{ marginBottom: '18px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <label className="form-label" style={{ margin: 0 }}>Password</label>
-              {mode === 'login' && (
-                <button 
-                  type="button" 
-                  onClick={fillDemoLogin}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--accent-primary)',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}
-                >
-                  <Sparkles size={12} />
-                  Demo Credentials
-                </button>
-              )}
-            </div>
-            <div className="input-with-icon" style={{ position: 'relative' }}>
-              <Lock size={18} className="input-icon" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                className={`form-input ${validationErrors.password ? 'input-error' : ''}`}
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer'
-                }}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {validationErrors.password && <span className="field-error">{validationErrors.password}</span>}
-          </div>
-
-          {/* Register: Confirm Password */}
-          {mode === 'register' && (
-            <div className="form-group" style={{ marginBottom: '22px' }}>
-              <label className="form-label">Confirm Password</label>
-              <div className="input-with-icon">
-                <Lock size={18} className="input-icon" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password_confirmation"
-                  className={`form-input ${validationErrors.password_confirmation ? 'input-error' : ''}`}
-                  placeholder="••••••••"
-                  value={formData.password_confirmation}
-                  onChange={handleChange}
-                />
-              </div>
-              {validationErrors.password_confirmation && (
-                <span className="field-error">{validationErrors.password_confirmation}</span>
-              )}
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            style={{
-              width: '100%',
-              padding: '14px 20px',
-              borderRadius: 'var(--radius-md)',
-              border: 'none',
-              background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover))',
-              color: '#FFFFFF',
-              fontSize: '1rem',
+          {/* Center Content & Graphic */}
+          <div style={{ margin: '40px 0 20px', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+            <h1 style={{
+              fontSize: '3.6rem',
               fontWeight: '700',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              color: '#ffffff',
+              lineHeight: '1.08',
+              letterSpacing: '-0.03em',
+              marginBottom: '32px',
+              textAlign: 'center'
+            }}>
+              Manage <br />
+              <span style={{ fontWeight: '400' }}>your system</span>
+            </h1>
+
+            {/* Mobile / Graphic Card Preview Mockup */}
+            <div style={{
+              width: '260px',
+              height: '340px',
+              margin: '0 auto',
+              backgroundColor: '#1d1918',
+              borderRadius: '36px',
+              border: '4px solid #332d2a',
+              padding: '16px',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255,255,255,0.02)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Notch */}
+              <div style={{
+                width: '70px',
+                height: '14px',
+                backgroundColor: '#0d0b0b',
+                borderRadius: '10px',
+                margin: '0 auto 12px'
+              }} />
+
+              {/* Card Mini Header */}
+              <div style={{ textAlign: 'left', padding: '0 8px' }}>
+                <span style={{ fontSize: '0.7rem', color: '#888' }}>Week 4 - 10 July</span>
+                <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#fff', marginTop: '2px' }}>
+                  $14,897.00
+                </div>
+              </div>
+
+              {/* Chart Mockup */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                height: '90px',
+                padding: '0 8px',
+                gap: '6px'
+              }}>
+                {[40, 65, 30, 90, 75, 50, 85].map((h, idx) => (
+                  <div key={idx} style={{
+                    width: '12%',
+                    height: `${h}%`,
+                    backgroundColor: idx === 3 ? '#FF4500' : '#2d2725',
+                    borderRadius: '4px'
+                  }} />
+                ))}
+              </div>
+
+              {/* Dark Sub-cards */}
+              <div style={{
+                backgroundColor: '#110f0e',
+                borderRadius: '16px',
+                padding: '12px',
+                textAlign: 'left',
+                border: '1px solid #282321'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#aaa' }}>
+                  <span>Active Users</span>
+                  <span style={{ color: '#FF5722', fontWeight: 600 }}>+24.5%</span>
+                </div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff', marginTop: '4px' }}>
+                  2,840 Active
+                </div>
+              </div>
+
+              {/* Multi-color Circle Logo Icon at bottom */}
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                background: 'conic-gradient(#FF4500 0deg 90deg, #FFD700 90deg 180deg, #00E5FF 180deg 270deg, #D500F9 270deg 360deg)',
+                margin: '0 auto',
+                padding: '3px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#181514' }} />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Left Footer Accessibility Icon */}
+          <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+            <div style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              border: '1.5px solid #ff5722',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '10px',
-              boxShadow: '0 8px 20px var(--accent-glow)',
-              transition: 'all 0.2s ease',
-              marginTop: mode === 'login' ? '12px' : '0'
-            }}
-          >
-            {isSubmitting ? (
-              <span>Authenticating...</span>
-            ) : mode === 'login' ? (
-              <>
-                <span>Sign In to Dashboard</span>
-                <ArrowRight size={18} />
-              </>
-            ) : (
-              <>
-                <span>Create Account</span>
-                <CheckCircle size={18} />
-              </>
-            )}
-          </button>
-        </form>
+              color: '#ff5722',
+              fontSize: '0.75rem',
+              fontWeight: 700
+            }}>
+              🚹
+            </div>
+          </div>
+        </div>
 
-        {/* Footer info */}
+        {/* RIGHT PANEL - CLEAN WHITE SIDE WITH ROUNDED CONTAINER */}
         <div style={{
-          padding: '16px 32px',
-          backgroundColor: 'var(--bg-main)',
-          borderTop: '1px solid var(--border-subtle)',
-          textAlign: 'center',
-          fontSize: '0.8rem',
-          color: 'var(--text-muted)'
+          backgroundColor: '#FFFFFF',
+          borderRadius: '32px',
+          padding: '48px 60px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          color: '#1A1A1A'
         }}>
-          Protected by Token-Based Authentication (Laravel Sanctum API)
+          
+          {/* Top Bar: Brand Logo + Toggle Mode Button */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            
+            {/* Logo */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'conic-gradient(#FF4500 0deg 90deg, #FFB300 90deg 180deg, #00E5FF 180deg 270deg, #E040FB 270deg 360deg)',
+                padding: '3px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#FFFFFF' }} />
+              </div>
+              <span style={{ fontSize: '1.4rem', fontWeight: '800', color: '#111111', letterSpacing: '-0.02em' }}>
+                AdminPulse
+              </span>
+            </div>
+
+            {/* Toggle Link */}
+            <button
+              type="button"
+              onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setValidationErrors({}); }}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: '#444444',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                transition: 'color 0.2s ease'
+              }}
+            >
+              {mode === 'login' ? (
+                <>
+                  <UserPlus size={18} />
+                  <span>Sign Up</span>
+                </>
+              ) : (
+                <>
+                  <LogIn size={18} />
+                  <span>Sign In</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Form Content */}
+          <div style={{ margin: 'auto 0', maxWidth: '440px', width: '100%', alignSelf: 'center' }}>
+            
+            <h2 style={{
+              fontSize: '2.4rem',
+              fontWeight: '700',
+              color: '#111111',
+              marginBottom: '32px',
+              letterSpacing: '-0.02em'
+            }}>
+              {mode === 'login' ? 'Sign In' : 'Sign Up'}
+            </h2>
+
+            {/* Error Notification */}
+            {authError && (
+              <div style={{
+                marginBottom: '20px',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                backgroundColor: '#FFF1F0',
+                border: '1px solid #FFCCC7',
+                color: '#FF4D4F',
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}>
+                <AlertCircle size={18} style={{ flexShrink: 0 }} />
+                <span>{authError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              
+              {/* Register: Full Name */}
+              {mode === 'register' && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Full Name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      style={{
+                        width: '100%',
+                        height: '52px',
+                        borderRadius: '26px',
+                        border: validationErrors.name ? '1.5px solid #FF4D4F' : '1px solid #E2E8F0',
+                        padding: '0 24px',
+                        fontSize: '0.95rem',
+                        outline: 'none',
+                        color: '#1E293B',
+                        backgroundColor: '#FFFFFF',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                  {validationErrors.name && (
+                    <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
+                      {validationErrors.name}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Email / Username Field */}
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email or Username"
+                    value={formData.email}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      height: '52px',
+                      borderRadius: '26px',
+                      border: validationErrors.email ? '1.5px solid #FF4D4F' : '1px solid #E2E8F0',
+                      padding: '0 24px',
+                      fontSize: '0.95rem',
+                      outline: 'none',
+                      color: '#1E293B',
+                      backgroundColor: '#FFFFFF',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+                {validationErrors.email && (
+                  <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
+                    {validationErrors.email}
+                  </span>
+                )}
+              </div>
+
+              {/* Register: Department */}
+              {mode === 'register' && (
+                <div style={{ marginBottom: '20px' }}>
+                  <select
+                    name="department"
+                    value={formData.department}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      height: '52px',
+                      borderRadius: '26px',
+                      border: '1px solid #E2E8F0',
+                      padding: '0 24px',
+                      fontSize: '0.95rem',
+                      outline: 'none',
+                      color: '#1E293B',
+                      backgroundColor: '#FFFFFF',
+                      boxSizing: 'border-box',
+                      appearance: 'none'
+                    }}
+                  >
+                    <option value="Engineering">Engineering Department</option>
+                    <option value="Product">Product Management</option>
+                    <option value="Design">UI/UX Design</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Sales">Sales & Business</option>
+                  </select>
+                </div>
+              )}
+
+              {/* Password Field */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      height: '52px',
+                      borderRadius: '26px',
+                      border: validationErrors.password ? '1.5px solid #FF4D4F' : '1px solid #E2E8F0',
+                      padding: '0 50px 0 24px',
+                      fontSize: '0.95rem',
+                      outline: 'none',
+                      color: '#1E293B',
+                      backgroundColor: '#FFFFFF',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '20px',
+                      background: 'none',
+                      border: 'none',
+                      color: '#94A3B8',
+                      cursor: 'pointer',
+                      padding: 0
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {validationErrors.password && (
+                  <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
+                    {validationErrors.password}
+                  </span>
+                )}
+              </div>
+
+              {/* Register: Confirm Password */}
+              {mode === 'register' && (
+                <div style={{ marginBottom: '20px' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password_confirmation"
+                    placeholder="Confirm Password"
+                    value={formData.password_confirmation}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      height: '52px',
+                      borderRadius: '26px',
+                      border: validationErrors.password_confirmation ? '1.5px solid #FF4D4F' : '1px solid #E2E8F0',
+                      padding: '0 24px',
+                      fontSize: '0.95rem',
+                      outline: 'none',
+                      color: '#1E293B',
+                      backgroundColor: '#FFFFFF',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                  {validationErrors.password_confirmation && (
+                    <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
+                      {validationErrors.password_confirmation}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Forgot Password Link & Demo Credentials Helper */}
+              {mode === 'login' && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', padding: '0 4px' }}>
+                  <button
+                    type="button"
+                    onClick={fillDemoLogin}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#6366F1',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: 0
+                    }}
+                  >
+                    <Sparkles size={14} />
+                    Fill Demo Credentials
+                  </button>
+
+                  <a 
+                    href="#forgot" 
+                    onClick={(e) => { e.preventDefault(); alert('Demo: Use email admin@example.com / password123'); }}
+                    style={{
+                      color: '#FF5722',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+              )}
+
+              {/* Action Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                style={{
+                  width: '100%',
+                  height: '52px',
+                  borderRadius: '26px',
+                  border: 'none',
+                  background: 'linear-gradient(90deg, #FF4500 0%, #FF6B00 100%)',
+                  color: '#FFFFFF',
+                  fontSize: '1rem',
+                  fontWeight: '700',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  boxShadow: '0 10px 25px rgba(255, 69, 0, 0.35)',
+                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                  marginTop: mode === 'register' ? '12px' : '0'
+                }}
+              >
+                {isSubmitting ? (
+                  <span>Processing...</span>
+                ) : mode === 'login' ? (
+                  <>
+                    <LogIn size={18} />
+                    <span>Sign In</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus size={18} />
+                    <span>Sign Up</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* Footer Bar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '0.78rem',
+            color: '#94A3B8',
+            paddingTop: '20px',
+            borderTop: '1px solid #F1F5F9'
+          }}>
+            <span>© 2026 AdminPulse Inc.</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <a href="#contact" onClick={(e) => e.preventDefault()} style={{ color: '#64748B', textDecoration: 'none' }}>
+                Contact Us
+              </a>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                <span>English</span>
+                <ChevronDown size={14} />
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>
