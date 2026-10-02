@@ -17,12 +17,12 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useUsers } from '../context/UserContext';
 
-export const AuthPage = () => {
+export const AuthPage = ({ initialMode = 'login' }) => {
   const { login, register, authError, isSubmitting, isAuthenticated, loading } = useAuth();
   const { addToast } = useUsers();
   const navigate = useNavigate();
 
-  const [mode, setMode] = useState('login'); // 'login' or 'register'
+  const [mode, setMode] = useState(initialMode); // 'login' or 'register'
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -299,7 +299,12 @@ export const AuthPage = () => {
             {/* Toggle Link */}
             <button
               type="button"
-              onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setValidationErrors({}); }}
+              onClick={() => {
+                const nextMode = mode === 'login' ? 'register' : 'login';
+                setMode(nextMode);
+                setValidationErrors({});
+                navigate(nextMode === 'login' ? '/login' : '/signup');
+              }}
               style={{
                 background: 'none',
                 border: 'none',

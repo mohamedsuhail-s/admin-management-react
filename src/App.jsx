@@ -57,8 +57,11 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Public Standalone Login & Sign Up Page */}
-          <Route path="/login" element={<AuthPage />} />
+          {/* Standalone Login Page Route */}
+          <Route path="/login" element={<AuthPage initialMode="login" />} />
+
+          {/* Standalone Sign Up Page Route */}
+          <Route path="/signup" element={<AuthPage initialMode="register" />} />
 
           {/* Protected Dashboard Route */}
           <Route 
