@@ -6,7 +6,8 @@ import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { UserManagementView } from './components/UserManagementView';
 import { ToastContainer } from './components/ToastContainer';
-import { AuthPage } from './components/AuthPage';
+import { LoginPage } from './components/LoginPage';
+import { SignupPage } from './components/SignupPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 const AppContent = () => {
@@ -57,11 +58,11 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Standalone Login Page Route */}
-          <Route path="/login" element={<AuthPage initialMode="login" />} />
+          {/* Separate Dedicated Login Page Route */}
+          <Route path="/login" element={<LoginPage />} />
 
-          {/* Standalone Sign Up Page Route */}
-          <Route path="/signup" element={<AuthPage initialMode="register" />} />
+          {/* Separate Dedicated Signup Page Route */}
+          <Route path="/signup" element={<SignupPage />} />
 
           {/* Protected Dashboard Route */}
           <Route 

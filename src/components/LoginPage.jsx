@@ -1,45 +1,37 @@
 import React, { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { 
-  User, 
   Mail, 
   Lock, 
   Eye, 
   EyeOff, 
   LogIn, 
-  UserPlus, 
-  Building, 
-  Phone, 
   AlertCircle,
   ChevronDown,
   Sparkles,
   Sun,
-  Moon
+  Moon,
+  UserPlus
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useUsers } from '../context/UserContext';
 
-export const AuthPage = ({ initialMode = 'login' }) => {
-  const { login, register, authError, isSubmitting, isAuthenticated, loading, theme, toggleTheme } = useAuth();
+export const LoginPage = () => {
+  const { login, authError, isSubmitting, isAuthenticated, loading, theme, toggleTheme } = useAuth();
   const { addToast } = useUsers();
   const navigate = useNavigate();
 
-  const [mode, setMode] = useState(initialMode); // 'login' or 'register'
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
-    password_confirmation: '',
-    department: 'Engineering',
-    phone: '',
   });
 
   const [validationErrors, setValidationErrors] = useState({});
 
   const isDark = theme === 'dark';
 
-  // If already logged in, redirect to protected dashboard
+  // Redirect if already authenticated
   if (isAuthenticated && !loading) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -53,17 +45,16 @@ export const AuthPage = ({ initialMode = 'login' }) => {
 
   const validate = () => {
     const errs = {};
-    if (!formData.email) errs.email = 'Email or username is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Invalid email format';
+    if (!formData.email) {
+      errs.email = 'Email or username is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errs.email = 'Please enter a valid email address';
+    }
 
-    if (!formData.password) errs.password = 'Password is required';
-    else if (formData.password.length < 6) errs.password = 'Password must be at least 6 characters';
-
-    if (mode === 'register') {
-      if (!formData.name) errs.name = 'Full name is required';
-      if (formData.password !== formData.password_confirmation) {
-        errs.password_confirmation = 'Passwords do not match';
-      }
+    if (!formData.password) {
+      errs.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      errs.password = 'Password must be at least 6 characters';
     }
 
     setValidationErrors(errs);
@@ -74,32 +65,23 @@ export const AuthPage = ({ initialMode = 'login' }) => {
     e.preventDefault();
     if (!validate()) return;
 
-    if (mode === 'login') {
-      const res = await login(formData.email, formData.password);
-      if (res.success) {
-        addToast(`Welcome back, ${res.user?.name || 'User'}!`, 'success', 'Login Successful');
-        navigate('/dashboard');
-      }
-    } else {
-      const res = await register(formData);
-      if (res.success) {
-        addToast(`Account created successfully! Welcome ${res.user?.name}.`, 'success', 'Account Created');
-        navigate('/dashboard');
-      }
+    const res = await login(formData.email, formData.password);
+    if (res.success) {
+      addToast(`Welcome back, ${res.user?.name || 'User'}!`, 'success', 'Login Successful');
+      navigate('/dashboard');
     }
   };
 
   const fillDemoLogin = () => {
-    setFormData(prev => ({
-      ...prev,
+    setFormData({
       email: 'admin@example.com',
       password: 'password123'
-    }));
+    });
     setValidationErrors({});
   };
 
   return (
-    <div className="auth-page-wrapper" style={{
+    <div className="login-page-wrapper" style={{
       minHeight: '100vh',
       width: '100vw',
       backgroundColor: isDark ? '#1E1B1A' : '#E2E8F0',
@@ -114,13 +96,13 @@ export const AuthPage = ({ initialMode = 'login' }) => {
       boxSizing: 'border-box'
     }}>
       
-      {/* Inject Responsive CSS Styles */}
+      {/* Responsive Media Query Styles */}
       <style>{`
         .auth-split-container {
           display: grid;
           grid-template-columns: 1fr 1fr;
         }
-        .left-auth-panel {
+        .left-promo-panel {
           display: flex;
         }
         @media (max-width: 960px) {
@@ -129,10 +111,10 @@ export const AuthPage = ({ initialMode = 'login' }) => {
             max-width: 480px !important;
             min-height: auto !important;
           }
-          .left-auth-panel {
+          .left-promo-panel {
             display: none !important;
           }
-          .right-auth-panel {
+          .right-form-panel {
             padding: 36px 28px !important;
             border-radius: 28px !important;
           }
@@ -152,8 +134,8 @@ export const AuthPage = ({ initialMode = 'login' }) => {
         transition: 'all 0.3s ease'
       }}>
 
-        {/* LEFT PANEL - DARK SHOWCASE SIDE (INSPIRED BY REFERENCE IMAGE) */}
-        <div className="left-auth-panel" style={{
+        {/* LEFT PANEL - DARK PROMOTIONAL SIDE (MATCHES INSPIRATION) */}
+        <div className="left-promo-panel" style={{
           padding: '48px 56px',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -172,7 +154,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
             Global management made simple – online solutions for you.
           </div>
 
-          {/* Center Content & Graphic */}
+          {/* Center Content & Graphic Mockup */}
           <div style={{ margin: '30px 0 20px', textAlign: 'center', position: 'relative', zIndex: 2 }}>
             <h1 style={{
               fontSize: '3.4rem',
@@ -187,7 +169,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
               <span style={{ fontWeight: '400' }}>your system</span>
             </h1>
 
-            {/* Mobile / Graphic Card Preview Mockup */}
+            {/* Mobile Device Graphic Mockup */}
             <div style={{
               width: '250px',
               height: '330px',
@@ -274,7 +256,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
 
           </div>
 
-          {/* Left Footer Accessibility Icon */}
+          {/* Left Footer Icon */}
           <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
             <div style={{
               width: '28px',
@@ -293,8 +275,8 @@ export const AuthPage = ({ initialMode = 'login' }) => {
           </div>
         </div>
 
-        {/* RIGHT PANEL - CLEAN FORM SIDE (MATCHES INSPIRATION) */}
-        <div className="right-auth-panel" style={{
+        {/* RIGHT PANEL - CLEAN LOGIN FORM SIDE */}
+        <div className="right-form-panel" style={{
           backgroundColor: isDark ? '#1E1B1A' : '#FFFFFF',
           borderRadius: '32px',
           padding: '48px 56px',
@@ -305,7 +287,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
           transition: 'all 0.3s ease'
         }}>
           
-          {/* Top Bar: Brand Logo + Theme Toggle + Switch Mode Button */}
+          {/* Top Bar: Brand Logo + Theme Toggle + Sign Up Link */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             
             {/* Logo */}
@@ -327,7 +309,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
               </span>
             </div>
 
-            {/* Right Action Icons: Theme Toggle + Mode Switch */}
+            {/* Right Action Controls: Theme Toggle & Sign Up Link */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <button
                 type="button"
@@ -342,45 +324,30 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                   alignItems: 'center',
                   padding: '6px',
                   borderRadius: '50%',
-                  transition: 'background-color 0.2s'
+                  minHeight: '44px',
+                  minWidth: '44px',
+                  justifyContent: 'center'
                 }}
               >
                 {isDark ? <Sun size={20} /> : <Moon size={20} />}
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  const nextMode = mode === 'login' ? 'register' : 'login';
-                  setMode(nextMode);
-                  setValidationErrors({});
-                  navigate(nextMode === 'login' ? '/login' : '/signup');
-                }}
+              <Link
+                to="/signup"
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
                   color: isDark ? '#F1F5F9' : '#444444',
                   fontSize: '0.9rem',
                   fontWeight: 600,
-                  transition: 'color 0.2s ease'
+                  textDecoration: 'none',
+                  minHeight: '44px'
                 }}
               >
-                {mode === 'login' ? (
-                  <>
-                    <UserPlus size={18} />
-                    <span>Sign Up</span>
-                  </>
-                ) : (
-                  <>
-                    <LogIn size={18} />
-                    <span>Sign In</span>
-                  </>
-                )}
-              </button>
+                <UserPlus size={18} />
+                <span>Sign Up</span>
+              </Link>
             </div>
 
           </div>
@@ -395,12 +362,12 @@ export const AuthPage = ({ initialMode = 'login' }) => {
               marginBottom: '28px',
               letterSpacing: '-0.02em'
             }}>
-              {mode === 'login' ? 'Sign In' : 'Sign Up'}
+              Sign In
             </h2>
 
             {/* Error Notification */}
             {authError && (
-              <div style={{
+              <div role="alert" style={{
                 marginBottom: '20px',
                 padding: '12px 16px',
                 borderRadius: '12px',
@@ -417,46 +384,20 @@ export const AuthPage = ({ initialMode = 'login' }) => {
               </div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               
-              {/* Register: Full Name */}
-              {mode === 'register' && (
-                <div style={{ marginBottom: '18px' }}>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Full Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      height: '52px',
-                      borderRadius: '26px',
-                      border: validationErrors.name ? '1.5px solid #FF4D4F' : isDark ? '1px solid #334155' : '1px solid #E2E8F0',
-                      padding: '0 24px',
-                      fontSize: '0.95rem',
-                      outline: 'none',
-                      color: isDark ? '#F8FAFC' : '#1E293B',
-                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                  {validationErrors.name && (
-                    <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
-                      {validationErrors.name}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Email / Username Field */}
-              <div style={{ marginBottom: '18px' }}>
+              {/* Email or Username Field */}
+              <div style={{ marginBottom: '20px' }}>
+                <label htmlFor="login-email" style={{ display: 'none' }}>Email or Username</label>
                 <input
+                  id="login-email"
                   type="email"
                   name="email"
                   placeholder="Email or Username"
                   value={formData.email}
                   onChange={handleChange}
+                  aria-invalid={!!validationErrors.email}
+                  aria-describedby={validationErrors.email ? "login-email-error" : undefined}
                   style={{
                     width: '100%',
                     height: '52px',
@@ -471,50 +412,25 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                   }}
                 />
                 {validationErrors.email && (
-                  <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
+                  <span id="login-email-error" style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
                     {validationErrors.email}
                   </span>
                 )}
               </div>
 
-              {/* Register: Department */}
-              {mode === 'register' && (
-                <div style={{ marginBottom: '18px' }}>
-                  <select
-                    name="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      height: '52px',
-                      borderRadius: '26px',
-                      border: isDark ? '1px solid #334155' : '1px solid #E2E8F0',
-                      padding: '0 24px',
-                      fontSize: '0.95rem',
-                      outline: 'none',
-                      color: isDark ? '#F8FAFC' : '#1E293B',
-                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <option value="Engineering">Engineering Department</option>
-                    <option value="Product">Product Management</option>
-                    <option value="Design">UI/UX Design</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Sales">Sales & Business</option>
-                  </select>
-                </div>
-              )}
-
               {/* Password Field */}
               <div style={{ marginBottom: '16px' }}>
+                <label htmlFor="login-password" style={{ display: 'none' }}>Password</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <input
+                    id="login-password"
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     placeholder="Password"
                     value={formData.password}
                     onChange={handleChange}
+                    aria-invalid={!!validationErrors.password}
+                    aria-describedby={validationErrors.password ? "login-password-error" : undefined}
                     style={{
                       width: '100%',
                       height: '52px',
@@ -531,95 +447,69 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                     style={{
                       position: 'absolute',
-                      right: '20px',
+                      right: '16px',
                       background: 'none',
                       border: 'none',
                       color: '#94A3B8',
                       cursor: 'pointer',
-                      padding: 0
+                      padding: '8px',
+                      minHeight: '44px',
+                      minWidth: '44px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
                 {validationErrors.password && (
-                  <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
+                  <span id="login-password-error" style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
                     {validationErrors.password}
                   </span>
                 )}
               </div>
 
-              {/* Register: Confirm Password */}
-              {mode === 'register' && (
-                <div style={{ marginBottom: '18px' }}>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password_confirmation"
-                    placeholder="Confirm Password"
-                    value={formData.password_confirmation}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      height: '52px',
-                      borderRadius: '26px',
-                      border: validationErrors.password_confirmation ? '1.5px solid #FF4D4F' : isDark ? '1px solid #334155' : '1px solid #E2E8F0',
-                      padding: '0 24px',
-                      fontSize: '0.95rem',
-                      outline: 'none',
-                      color: isDark ? '#F8FAFC' : '#1E293B',
-                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                  {validationErrors.password_confirmation && (
-                    <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
-                      {validationErrors.password_confirmation}
-                    </span>
-                  )}
-                </div>
-              )}
+              {/* Forgot Password & Fill Demo Helper */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', padding: '0 4px' }}>
+                <button
+                  type="button"
+                  onClick={fillDemoLogin}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#6366F1',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: 0
+                  }}
+                >
+                  <Sparkles size={14} />
+                  Fill Demo Credentials
+                </button>
 
-              {/* Forgot Password Link & Demo Credentials Helper */}
-              {mode === 'login' && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', padding: '0 4px' }}>
-                  <button
-                    type="button"
-                    onClick={fillDemoLogin}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#6366F1',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: 0
-                    }}
-                  >
-                    <Sparkles size={14} />
-                    Fill Demo Credentials
-                  </button>
+                <a 
+                  href="#forgot" 
+                  onClick={(e) => { e.preventDefault(); alert('Demo Notice: Use admin@example.com / password123'); }}
+                  style={{
+                    color: '#FF5722',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    textDecoration: 'none'
+                  }}
+                >
+                  Forgot password?
+                </a>
+              </div>
 
-                  <a 
-                    href="#forgot" 
-                    onClick={(e) => { e.preventDefault(); alert('Demo: Use email admin@example.com / password123'); }}
-                    style={{
-                      color: '#FF5722',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      textDecoration: 'none'
-                    }}
-                  >
-                    Forgot password?
-                  </a>
-                </div>
-              )}
-
-              {/* Action Button */}
+              {/* Gradient Primary Sign In Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -638,24 +528,26 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                   justifyContent: 'center',
                   gap: '8px',
                   boxShadow: '0 10px 25px rgba(255, 69, 0, 0.35)',
-                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                  marginTop: mode === 'register' ? '8px' : '0'
+                  transition: 'transform 0.15s ease, box-shadow 0.15s ease'
                 }}
               >
                 {isSubmitting ? (
-                  <span>Processing...</span>
-                ) : mode === 'login' ? (
+                  <span>Authenticating...</span>
+                ) : (
                   <>
                     <LogIn size={18} />
                     <span>Sign In</span>
                   </>
-                ) : (
-                  <>
-                    <UserPlus size={18} />
-                    <span>Sign Up</span>
-                  </>
                 )}
               </button>
+
+              {/* Bottom Signup Navigation Link */}
+              <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.9rem', color: isDark ? '#94A3B8' : '#64748B' }}>
+                Don't have an account?{' '}
+                <Link to="/signup" style={{ color: '#FF5722', fontWeight: 600, textDecoration: 'none' }}>
+                  Create an account
+                </Link>
+              </div>
             </form>
           </div>
 
