@@ -8,6 +8,7 @@ import { UserManagementView } from './components/UserManagementView';
 import { ToastContainer } from './components/ToastContainer';
 import { LoginPage } from './components/LoginPage';
 import { SignupPage } from './components/SignupPage';
+import { ForgotPasswordPage } from './components/ForgotPasswordPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 const AppContent = () => {
@@ -61,6 +62,9 @@ export default function App() {
 
             {/* Separate Dedicated Signup Page Route */}
             <Route path="/signup" element={<SignupPage />} />
+
+            {/* Dedicated Forgot Password OTP Route */}
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
             {/* Protected Dashboard Route */}
             <Route 

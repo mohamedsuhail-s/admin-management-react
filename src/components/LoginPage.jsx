@@ -496,9 +496,8 @@ export const LoginPage = () => {
                   Fill Demo Credentials
                 </button>
 
-                <a 
-                  href="#forgot" 
-                  onClick={(e) => { e.preventDefault(); alert('Demo Notice: Use admin@example.com / password123'); }}
+                <Link 
+                  to="/forgot-password" 
                   style={{
                     color: '#FF5722',
                     fontSize: '0.85rem',
@@ -507,7 +506,7 @@ export const LoginPage = () => {
                   }}
                 >
                   Forgot password?
-                </a>
+                </Link>
               </div>
 
               {/* Gradient Primary Sign In Button */}
