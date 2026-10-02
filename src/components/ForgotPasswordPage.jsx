@@ -31,6 +31,7 @@ export const ForgotPasswordPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [debugOtp, setDebugOtp] = useState('');
+  const [resendError, setResendError] = useState('');
 
   // Form Fields
   const [email, setEmail] = useState('');
@@ -71,6 +72,11 @@ export const ForgotPasswordPage = () => {
       addToast(res.data.message || 'OTP verification code sent to your email.', 'success', 'OTP Sent');
       if (res.data.otp_debug) {
         setDebugOtp(res.data.otp_debug);
+      }
+      if (res.data.resend_error) {
+        setResendError(res.data.resend_error);
+      } else {
+        setResendError('');
       }
       setStep(2);
       setCountdown(60);
@@ -457,7 +463,14 @@ export const ForgotPasswordPage = () => {
                 {debugOtp && (
                   <div style={{ marginBottom: '16px', padding: '10px 14px', backgroundColor: 'rgba(99, 102, 241, 0.15)', border: '1px solid #6366F1', borderRadius: '12px', color: '#6366F1', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Sparkles size={16} />
-                    <span>Demo Mode OTP: <strong>{debugOtp}</strong></span>
+                    <span>OTP Verification Code: <strong>{debugOtp}</strong></span>
+                  </div>
+                )}
+
+                {resendError && (
+                  <div style={{ marginBottom: '16px', padding: '10px 14px', backgroundColor: 'rgba(245, 158, 11, 0.15)', border: '1px solid #F59E0B', borderRadius: '12px', color: '#F59E0B', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <AlertCircle size={16} />
+                    <span>Resend Notice: {resendError}</span>
                   </div>
                 )}
 
