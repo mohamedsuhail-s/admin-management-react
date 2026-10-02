@@ -12,6 +12,17 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('admin_theme') || 'dark');
+
+  // Sync theme with HTML data-theme attribute
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('admin_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Verify token on app mount
   useEffect(() => {
@@ -107,6 +118,8 @@ export const AuthProvider = ({ children }) => {
       authError,
       setAuthError,
       isSubmitting,
+      theme,
+      toggleTheme,
       login,
       register,
       logout

@@ -1,12 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, Bell, Search, ChevronRight, LogOut } from 'lucide-react';
+import { UserPlus, Bell, Search, ChevronRight, LogOut, Sun, Moon } from 'lucide-react';
 import { useUsers } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
 
 export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
   const { setIsCreateModalOpen } = useUsers();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, theme, toggleTheme } = useAuth();
   const navigate = useNavigate();
 
   const getMenuTitle = () => {
@@ -52,6 +52,15 @@ export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
           />
         </div>
 
+        {/* Theme Toggle Button */}
+        <button 
+          className="btn-icon-only" 
+          onClick={toggleTheme} 
+          title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+        >
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
         {/* Notifications Icon */}
         <button className="btn-icon-only" title="Notifications">
           <Bell size={18} />
@@ -66,7 +75,7 @@ export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
           <span>Add User</span>
         </button>
 
-        {/* Authenticated User Profile & Logout */}
+        {/* Authenticated User Profile & Logout - NO LOGIN/SIGNUP BUTTONS */}
         {isAuthenticated && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '8px', paddingLeft: '12px', borderLeft: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

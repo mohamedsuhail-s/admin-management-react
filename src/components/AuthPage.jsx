@@ -12,13 +12,15 @@ import {
   Phone, 
   AlertCircle,
   ChevronDown,
-  Sparkles
+  Sparkles,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useUsers } from '../context/UserContext';
 
 export const AuthPage = ({ initialMode = 'login' }) => {
-  const { login, register, authError, isSubmitting, isAuthenticated, loading } = useAuth();
+  const { login, register, authError, isSubmitting, isAuthenticated, loading, theme, toggleTheme } = useAuth();
   const { addToast } = useUsers();
   const navigate = useNavigate();
 
@@ -34,6 +36,8 @@ export const AuthPage = ({ initialMode = 'login' }) => {
   });
 
   const [validationErrors, setValidationErrors] = useState({});
+
+  const isDark = theme === 'dark';
 
   // If already logged in, redirect to protected dashboard
   if (isAuthenticated && !loading) {
@@ -95,41 +99,67 @@ export const AuthPage = ({ initialMode = 'login' }) => {
   };
 
   return (
-    <div style={{
+    <div className="auth-page-wrapper" style={{
       minHeight: '100vh',
       width: '100vw',
-      backgroundColor: '#867d7a',
-      background: 'linear-gradient(135deg, #7c726e 0%, #59504c 100%)',
+      backgroundColor: isDark ? '#1E1B1A' : '#E2E8F0',
+      background: isDark 
+        ? 'linear-gradient(135deg, #2A2422 0%, #161313 100%)' 
+        : 'linear-gradient(135deg, #F1F5F9 0%, #CBD5E1 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '24px',
+      padding: '24px 16px',
       fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
       boxSizing: 'border-box'
     }}>
       
+      {/* Inject Responsive CSS Styles */}
+      <style>{`
+        .auth-split-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+        .left-auth-panel {
+          display: flex;
+        }
+        @media (max-width: 960px) {
+          .auth-split-container {
+            grid-template-columns: 1fr !important;
+            max-width: 480px !important;
+            min-height: auto !important;
+          }
+          .left-auth-panel {
+            display: none !important;
+          }
+          .right-auth-panel {
+            padding: 36px 28px !important;
+            border-radius: 28px !important;
+          }
+        }
+      `}</style>
+
       {/* Main Split-Screen Container */}
-      <div style={{
+      <div className="auth-split-container" style={{
         width: '100%',
-        maxWidth: '1240px',
+        maxWidth: '1200px',
         minHeight: '680px',
-        backgroundColor: '#181514',
+        backgroundColor: isDark ? '#181514' : '#FFFFFF',
         borderRadius: '32px',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        boxShadow: '0 30px 60px rgba(0, 0, 0, 0.45)',
+        boxShadow: isDark ? '0 30px 60px rgba(0, 0, 0, 0.55)' : '0 20px 40px rgba(0, 0, 0, 0.12)',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        transition: 'all 0.3s ease'
       }}>
 
-        {/* LEFT PANEL - DARK SIDE (INSPIRED BY REFERENCE) */}
-        <div style={{
+        {/* LEFT PANEL - DARK SHOWCASE SIDE (INSPIRED BY REFERENCE IMAGE) */}
+        <div className="left-auth-panel" style={{
           padding: '48px 56px',
-          display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           position: 'relative',
           backgroundColor: '#161313',
+          color: '#FFFFFF',
           overflow: 'hidden'
         }}>
           {/* Top Tagline */}
@@ -143,14 +173,14 @@ export const AuthPage = ({ initialMode = 'login' }) => {
           </div>
 
           {/* Center Content & Graphic */}
-          <div style={{ margin: '40px 0 20px', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+          <div style={{ margin: '30px 0 20px', textAlign: 'center', position: 'relative', zIndex: 2 }}>
             <h1 style={{
-              fontSize: '3.6rem',
+              fontSize: '3.4rem',
               fontWeight: '700',
               color: '#ffffff',
               lineHeight: '1.08',
               letterSpacing: '-0.03em',
-              marginBottom: '32px',
+              marginBottom: '28px',
               textAlign: 'center'
             }}>
               Manage <br />
@@ -159,8 +189,8 @@ export const AuthPage = ({ initialMode = 'login' }) => {
 
             {/* Mobile / Graphic Card Preview Mockup */}
             <div style={{
-              width: '260px',
-              height: '340px',
+              width: '250px',
+              height: '330px',
               margin: '0 auto',
               backgroundColor: '#1d1918',
               borderRadius: '36px',
@@ -195,7 +225,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                 display: 'flex',
                 alignItems: 'flex-end',
                 justifyContent: 'space-between',
-                height: '90px',
+                height: '85px',
                 padding: '0 8px',
                 gap: '6px'
               }}>
@@ -263,25 +293,26 @@ export const AuthPage = ({ initialMode = 'login' }) => {
           </div>
         </div>
 
-        {/* RIGHT PANEL - CLEAN WHITE SIDE WITH ROUNDED CONTAINER */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
+        {/* RIGHT PANEL - CLEAN FORM SIDE (MATCHES INSPIRATION) */}
+        <div className="right-auth-panel" style={{
+          backgroundColor: isDark ? '#1E1B1A' : '#FFFFFF',
           borderRadius: '32px',
-          padding: '48px 60px',
+          padding: '48px 56px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          color: '#1A1A1A'
+          color: isDark ? '#F8FAFC' : '#1A1A1A',
+          transition: 'all 0.3s ease'
         }}>
           
-          {/* Top Bar: Brand Logo + Toggle Mode Button */}
+          {/* Top Bar: Brand Logo + Theme Toggle + Switch Mode Button */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             
             {/* Logo */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                width: '28px',
-                height: '28px',
+                width: '30px',
+                height: '30px',
                 borderRadius: '50%',
                 background: 'conic-gradient(#FF4500 0deg 90deg, #FFB300 90deg 180deg, #00E5FF 180deg 270deg, #E040FB 270deg 360deg)',
                 padding: '3px',
@@ -289,47 +320,69 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#FFFFFF' }} />
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: isDark ? '#1E1B1A' : '#FFFFFF' }} />
               </div>
-              <span style={{ fontSize: '1.4rem', fontWeight: '800', color: '#111111', letterSpacing: '-0.02em' }}>
+              <span style={{ fontSize: '1.4rem', fontWeight: '800', color: isDark ? '#FFFFFF' : '#111111', letterSpacing: '-0.02em' }}>
                 AdminPulse
               </span>
             </div>
 
-            {/* Toggle Link */}
-            <button
-              type="button"
-              onClick={() => {
-                const nextMode = mode === 'login' ? 'register' : 'login';
-                setMode(nextMode);
-                setValidationErrors({});
-                navigate(nextMode === 'login' ? '/login' : '/signup');
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                color: '#444444',
-                fontSize: '0.9rem',
-                fontWeight: 600,
-                transition: 'color 0.2s ease'
-              }}
-            >
-              {mode === 'login' ? (
-                <>
-                  <UserPlus size={18} />
-                  <span>Sign Up</span>
-                </>
-              ) : (
-                <>
-                  <LogIn size={18} />
-                  <span>Sign In</span>
-                </>
-              )}
-            </button>
+            {/* Right Action Icons: Theme Toggle + Mode Switch */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: isDark ? '#CBD5E1' : '#64748B',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '6px',
+                  borderRadius: '50%',
+                  transition: 'background-color 0.2s'
+                }}
+              >
+                {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const nextMode = mode === 'login' ? 'register' : 'login';
+                  setMode(nextMode);
+                  setValidationErrors({});
+                  navigate(nextMode === 'login' ? '/login' : '/signup');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  color: isDark ? '#F1F5F9' : '#444444',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  transition: 'color 0.2s ease'
+                }}
+              >
+                {mode === 'login' ? (
+                  <>
+                    <UserPlus size={18} />
+                    <span>Sign Up</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn size={18} />
+                    <span>Sign In</span>
+                  </>
+                )}
+              </button>
+            </div>
+
           </div>
 
           {/* Form Content */}
@@ -338,8 +391,8 @@ export const AuthPage = ({ initialMode = 'login' }) => {
             <h2 style={{
               fontSize: '2.4rem',
               fontWeight: '700',
-              color: '#111111',
-              marginBottom: '32px',
+              color: isDark ? '#FFFFFF' : '#111111',
+              marginBottom: '28px',
               letterSpacing: '-0.02em'
             }}>
               {mode === 'login' ? 'Sign In' : 'Sign Up'}
@@ -351,9 +404,9 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                 marginBottom: '20px',
                 padding: '12px 16px',
                 borderRadius: '12px',
-                backgroundColor: '#FFF1F0',
-                border: '1px solid #FFCCC7',
-                color: '#FF4D4F',
+                backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : '#FFF1F0',
+                border: `1px solid ${isDark ? '#EF4444' : '#FFCCC7'}`,
+                color: isDark ? '#FCA5A5' : '#FF4D4F',
                 fontSize: '0.875rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -368,28 +421,26 @@ export const AuthPage = ({ initialMode = 'login' }) => {
               
               {/* Register: Full Name */}
               {mode === 'register' && (
-                <div style={{ marginBottom: '20px' }}>
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder="Full Name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      style={{
-                        width: '100%',
-                        height: '52px',
-                        borderRadius: '26px',
-                        border: validationErrors.name ? '1.5px solid #FF4D4F' : '1px solid #E2E8F0',
-                        padding: '0 24px',
-                        fontSize: '0.95rem',
-                        outline: 'none',
-                        color: '#1E293B',
-                        backgroundColor: '#FFFFFF',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
+                <div style={{ marginBottom: '18px' }}>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      height: '52px',
+                      borderRadius: '26px',
+                      border: validationErrors.name ? '1.5px solid #FF4D4F' : isDark ? '1px solid #334155' : '1px solid #E2E8F0',
+                      padding: '0 24px',
+                      fontSize: '0.95rem',
+                      outline: 'none',
+                      color: isDark ? '#F8FAFC' : '#1E293B',
+                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                      boxSizing: 'border-box'
+                    }}
+                  />
                   {validationErrors.name && (
                     <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
                       {validationErrors.name}
@@ -399,28 +450,26 @@ export const AuthPage = ({ initialMode = 'login' }) => {
               )}
 
               {/* Email / Username Field */}
-              <div style={{ marginBottom: '20px' }}>
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email or Username"
-                    value={formData.email}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      height: '52px',
-                      borderRadius: '26px',
-                      border: validationErrors.email ? '1.5px solid #FF4D4F' : '1px solid #E2E8F0',
-                      padding: '0 24px',
-                      fontSize: '0.95rem',
-                      outline: 'none',
-                      color: '#1E293B',
-                      backgroundColor: '#FFFFFF',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
+              <div style={{ marginBottom: '18px' }}>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email or Username"
+                  value={formData.email}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    height: '52px',
+                    borderRadius: '26px',
+                    border: validationErrors.email ? '1.5px solid #FF4D4F' : isDark ? '1px solid #334155' : '1px solid #E2E8F0',
+                    padding: '0 24px',
+                    fontSize: '0.95rem',
+                    outline: 'none',
+                    color: isDark ? '#F8FAFC' : '#1E293B',
+                    backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                    boxSizing: 'border-box'
+                  }}
+                />
                 {validationErrors.email && (
                   <span style={{ fontSize: '0.8rem', color: '#FF4D4F', marginTop: '4px', display: 'block', paddingLeft: '16px' }}>
                     {validationErrors.email}
@@ -430,7 +479,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
 
               {/* Register: Department */}
               {mode === 'register' && (
-                <div style={{ marginBottom: '20px' }}>
+                <div style={{ marginBottom: '18px' }}>
                   <select
                     name="department"
                     value={formData.department}
@@ -439,14 +488,13 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                       width: '100%',
                       height: '52px',
                       borderRadius: '26px',
-                      border: '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #334155' : '1px solid #E2E8F0',
                       padding: '0 24px',
                       fontSize: '0.95rem',
                       outline: 'none',
-                      color: '#1E293B',
-                      backgroundColor: '#FFFFFF',
-                      boxSizing: 'border-box',
-                      appearance: 'none'
+                      color: isDark ? '#F8FAFC' : '#1E293B',
+                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                      boxSizing: 'border-box'
                     }}
                   >
                     <option value="Engineering">Engineering Department</option>
@@ -471,12 +519,12 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                       width: '100%',
                       height: '52px',
                       borderRadius: '26px',
-                      border: validationErrors.password ? '1.5px solid #FF4D4F' : '1px solid #E2E8F0',
+                      border: validationErrors.password ? '1.5px solid #FF4D4F' : isDark ? '1px solid #334155' : '1px solid #E2E8F0',
                       padding: '0 50px 0 24px',
                       fontSize: '0.95rem',
                       outline: 'none',
-                      color: '#1E293B',
-                      backgroundColor: '#FFFFFF',
+                      color: isDark ? '#F8FAFC' : '#1E293B',
+                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
                       boxSizing: 'border-box'
                     }}
                   />
@@ -505,7 +553,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
 
               {/* Register: Confirm Password */}
               {mode === 'register' && (
-                <div style={{ marginBottom: '20px' }}>
+                <div style={{ marginBottom: '18px' }}>
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password_confirmation"
@@ -516,12 +564,12 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                       width: '100%',
                       height: '52px',
                       borderRadius: '26px',
-                      border: validationErrors.password_confirmation ? '1.5px solid #FF4D4F' : '1px solid #E2E8F0',
+                      border: validationErrors.password_confirmation ? '1.5px solid #FF4D4F' : isDark ? '1px solid #334155' : '1px solid #E2E8F0',
                       padding: '0 24px',
                       fontSize: '0.95rem',
                       outline: 'none',
-                      color: '#1E293B',
-                      backgroundColor: '#FFFFFF',
+                      color: isDark ? '#F8FAFC' : '#1E293B',
+                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
                       boxSizing: 'border-box'
                     }}
                   />
@@ -535,7 +583,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
 
               {/* Forgot Password Link & Demo Credentials Helper */}
               {mode === 'login' && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', padding: '0 4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', padding: '0 4px' }}>
                   <button
                     type="button"
                     onClick={fillDemoLogin}
@@ -591,7 +639,7 @@ export const AuthPage = ({ initialMode = 'login' }) => {
                   gap: '8px',
                   boxShadow: '0 10px 25px rgba(255, 69, 0, 0.35)',
                   transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                  marginTop: mode === 'register' ? '12px' : '0'
+                  marginTop: mode === 'register' ? '8px' : '0'
                 }}
               >
                 {isSubmitting ? (
@@ -617,14 +665,14 @@ export const AuthPage = ({ initialMode = 'login' }) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             fontSize: '0.78rem',
-            color: '#94A3B8',
+            color: isDark ? '#64748B' : '#94A3B8',
             paddingTop: '20px',
-            borderTop: '1px solid #F1F5F9'
+            borderTop: isDark ? '1px solid #292524' : '1px solid #F1F5F9'
           }}>
             <span>© 2026 AdminPulse Inc.</span>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <a href="#contact" onClick={(e) => e.preventDefault()} style={{ color: '#64748B', textDecoration: 'none' }}>
+              <a href="#contact" onClick={(e) => e.preventDefault()} style={{ color: isDark ? '#94A3B8' : '#64748B', textDecoration: 'none' }}>
                 Contact Us
               </a>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
