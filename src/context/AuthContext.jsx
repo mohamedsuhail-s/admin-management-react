@@ -10,12 +10,10 @@ export const AuthProvider = ({ children }) => {
   });
   const [token, setToken] = useState(() => localStorage.getItem('auth_token') || null);
   const [loading, setLoading] = useState(true);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
   const [authError, setAuthError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Verify token on app load if token exists
+  // Verify token on app mount
   useEffect(() => {
     const verifyAuth = async () => {
       if (token) {
@@ -26,7 +24,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user_data', JSON.stringify(res.data.user));
           }
         } catch (err) {
-          console.error("Auth check failed:", err);
+          console.error("Auth token verification failed:", err);
           logout();
         }
       }
@@ -49,10 +47,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('auth_token', authToken);
       localStorage.setItem('user_data', JSON.stringify(userData));
       
-      setAuthModalOpen(false);
       return { success: true, user: userData };
     } catch (err) {
-      const msg = err.response?.data?.message || 'Invalid credentials or connection error.';
+      const msg = err.response?.data?.message || 'Invalid credentials. Please check your email and password.';
       setAuthError(msg);
       return { success: false, error: msg };
     } finally {
@@ -73,12 +70,11 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('auth_token', authToken);
       localStorage.setItem('user_data', JSON.stringify(userData));
 
-      setAuthModalOpen(false);
       return { success: true, user: userData };
     } catch (err) {
-      const msg = err.response?.data?.message || err.response?.data?.errors 
+      const msg = err.response?.data?.message || (err.response?.data?.errors 
         ? Object.values(err.response.data.errors).flat().join(', ')
-        : 'Registration failed. Please try again.';
+        : 'Registration failed. Please try again.');
       setAuthError(msg);
       return { success: false, error: msg };
     } finally {
@@ -93,7 +89,7 @@ export const AuthProvider = ({ children }) => {
         await api.post('/logout');
       }
     } catch (err) {
-      console.warn("Logout API warning:", err);
+      console.warn("Logout API notice:", err);
     } finally {
       setUser(null);
       setToken(null);
@@ -102,41 +98,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const openLogin = () => {
-    setAuthMode('login');
-    setAuthError('');
-    setAuthModalOpen(true);
-  };
-
-  const openRegister = () => {
-    setAuthMode('register');
-    setAuthError('');
-    setAuthModalOpen(true);
-  };
-
-  const closeAuthModal = () => {
-    setAuthModalOpen(false);
-    setAuthError('');
-  };
-
   return (
     <AuthContext.Provider value={{
       user,
       token,
       loading,
       isAuthenticated: !!user && !!token,
-      authModalOpen,
-      authMode,
-      setAuthMode,
       authError,
       setAuthError,
       isSubmitting,
       login,
       register,
-      logout,
-      openLogin,
-      openRegister,
-      closeAuthModal
+      logout
     }}>
       {children}
     </AuthContext.Provider>

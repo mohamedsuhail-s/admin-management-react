@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { 
   User, 
   Mail, 
@@ -10,7 +11,6 @@ import {
   Building, 
   Phone, 
   AlertCircle,
-  ArrowRight,
   ChevronDown,
   Sparkles
 } from 'lucide-react';
@@ -18,8 +18,9 @@ import { useAuth } from '../context/AuthContext';
 import { useUsers } from '../context/UserContext';
 
 export const AuthPage = () => {
-  const { login, register, authError, isSubmitting } = useAuth();
+  const { login, register, authError, isSubmitting, isAuthenticated, loading } = useAuth();
   const { addToast } = useUsers();
+  const navigate = useNavigate();
 
   const [mode, setMode] = useState('login'); // 'login' or 'register'
   const [showPassword, setShowPassword] = useState(false);
@@ -33,6 +34,11 @@ export const AuthPage = () => {
   });
 
   const [validationErrors, setValidationErrors] = useState({});
+
+  // If already logged in, redirect to protected dashboard
+  if (isAuthenticated && !loading) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,11 +74,13 @@ export const AuthPage = () => {
       const res = await login(formData.email, formData.password);
       if (res.success) {
         addToast(`Welcome back, ${res.user?.name || 'User'}!`, 'success', 'Login Successful');
+        navigate('/dashboard');
       }
     } else {
       const res = await register(formData);
       if (res.success) {
         addToast(`Account created successfully! Welcome ${res.user?.name}.`, 'success', 'Account Created');
+        navigate('/dashboard');
       }
     }
   };
@@ -100,7 +108,7 @@ export const AuthPage = () => {
       boxSizing: 'border-box'
     }}>
       
-      {/* Main Container */}
+      {/* Main Split-Screen Container */}
       <div style={{
         width: '100%',
         maxWidth: '1240px',
@@ -218,7 +226,7 @@ export const AuthPage = () => {
                 </div>
               </div>
 
-              {/* Multi-color Circle Logo Icon at bottom */}
+              {/* Multi-color Circle Logo Icon */}
               <div style={{
                 width: '32px',
                 height: '32px',
@@ -356,11 +364,7 @@ export const AuthPage = () => {
               {/* Register: Full Name */}
               {mode === 'register' && (
                 <div style={{ marginBottom: '20px' }}>
-                  <div style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <input
                       type="text"
                       name="name"

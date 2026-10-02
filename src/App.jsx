@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { UserManagementView } from './components/UserManagementView';
 import { ToastContainer } from './components/ToastContainer';
 import { AuthPage } from './components/AuthPage';
-import { Shield, Loader2 } from 'lucide-react';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 const AppContent = () => {
   const [activeMenu, setActiveMenu] = useState('users'); // Default menu set to User Management
@@ -14,7 +15,7 @@ const AppContent = () => {
 
   return (
     <div className="app-container">
-      {/* Sidebar with highlighted User Management single main menu */}
+      {/* Sidebar Navigation */}
       <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
 
       <div className="main-content">
@@ -51,58 +52,31 @@ const AppContent = () => {
   );
 };
 
-// Gatekeeper Component: Renders AuthPage first if unauthenticated, or Dashboard if logged in
-const MainRouter = () => {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        width: '100vw',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'var(--bg-main)',
-        color: 'var(--text-primary)',
-        gap: '16px'
-      }}>
-        <div style={{
-          width: '56px',
-          height: '56px',
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 10px 20px var(--accent-glow)'
-        }}>
-          <Shield size={30} color="#FFFFFF" />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', color: 'var(--text-secondary)' }}>
-          <Loader2 size={20} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
-          <span>Verifying authentication session...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <AuthPage />;
-  }
-
-  return (
-    <UserProvider>
-      <AppContent />
-    </UserProvider>
-  );
-};
-
 export default function App() {
   return (
-    <AuthProvider>
-      <MainRouter />
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Public Standalone Login & Sign Up Page */}
+          <Route path="/login" element={<AuthPage />} />
+
+          {/* Protected Dashboard Route */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <UserProvider>
+                  <AppContent />
+                </UserProvider>
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Default Redirects */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

@@ -1,11 +1,13 @@
 import React from 'react';
-import { UserPlus, Bell, Search, ChevronRight, LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { UserPlus, Bell, Search, ChevronRight, LogOut } from 'lucide-react';
 import { useUsers } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
 
 export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
   const { setIsCreateModalOpen } = useUsers();
-  const { user, isAuthenticated, logout, openLogin, openRegister } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const getMenuTitle = () => {
     switch (activeMenu) {
@@ -15,6 +17,11 @@ export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
       case 'settings': return 'System Settings';
       default: return 'Admin Overview';
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (
@@ -59,8 +66,8 @@ export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
           <span>Add User</span>
         </button>
 
-        {/* Authentication Controls */}
-        {isAuthenticated ? (
+        {/* Authenticated User Profile & Logout */}
+        {isAuthenticated && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '8px', paddingLeft: '12px', borderLeft: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <img 
@@ -80,31 +87,12 @@ export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
 
             <button 
               className="btn btn-secondary"
-              onClick={logout}
+              onClick={handleLogout}
               title="Logout"
               style={{ padding: '8px 12px', fontSize: '0.85rem' }}
             >
               <LogOut size={16} />
               <span>Logout</span>
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '8px', paddingLeft: '12px', borderLeft: '1px solid var(--border-color)' }}>
-            <button 
-              className="btn btn-secondary"
-              onClick={openLogin}
-              style={{ padding: '8px 14px', fontSize: '0.875rem' }}
-            >
-              <LogIn size={16} />
-              <span>Login</span>
-            </button>
-            <button 
-              className="btn btn-primary"
-              onClick={openRegister}
-              style={{ padding: '8px 14px', fontSize: '0.875rem' }}
-            >
-              <UserIcon size={16} />
-              <span>Sign Up</span>
             </button>
           </div>
         )}
