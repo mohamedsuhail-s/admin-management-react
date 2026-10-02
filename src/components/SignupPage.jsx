@@ -18,7 +18,8 @@ import { useUsers } from '../context/UserContext';
 
 export const SignupPage = () => {
   const { register, authError, isSubmitting, isAuthenticated, loading, theme, toggleTheme } = useAuth();
-  const { addToast } = useUsers();
+  const userCtx = useUsers();
+  const addToast = userCtx?.addToast || (() => {});
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);

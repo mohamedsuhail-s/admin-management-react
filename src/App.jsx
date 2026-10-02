@@ -46,9 +46,6 @@ const AppContent = () => {
           </div>
         )}
       </div>
-
-      {/* Floating Notifications */}
-      <ToastContainer />
     </div>
   );
 };
@@ -56,31 +53,34 @@ const AppContent = () => {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          {/* Separate Dedicated Login Page Route */}
-          <Route path="/login" element={<LoginPage />} />
+      <UserProvider>
+        <AuthProvider>
+          <Routes>
+            {/* Separate Dedicated Login Page Route */}
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* Separate Dedicated Signup Page Route */}
-          <Route path="/signup" element={<SignupPage />} />
+            {/* Separate Dedicated Signup Page Route */}
+            <Route path="/signup" element={<SignupPage />} />
 
-          {/* Protected Dashboard Route */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <UserProvider>
+            {/* Protected Dashboard Route */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
                   <AppContent />
-                </UserProvider>
-              </ProtectedRoute>
-            } 
-          />
+                </ProtectedRoute>
+              } 
+            />
 
-          {/* Default Redirects */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </AuthProvider>
+            {/* Default Redirects */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+
+          {/* Root Level Notifications */}
+          <ToastContainer />
+        </AuthProvider>
+      </UserProvider>
     </BrowserRouter>
   );
 }

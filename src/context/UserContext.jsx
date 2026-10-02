@@ -18,8 +18,14 @@ export const UserProvider = ({ children }) => {
     return localStorage.getItem('admin_theme') || 'dark';
   });
 
-  // Fetch users exclusively from Laravel API
+  // Fetch users exclusively from Laravel API when authenticated
   const fetchUsers = async () => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -29,7 +35,6 @@ export const UserProvider = ({ children }) => {
     } catch (err) {
       console.error("API Error fetching users:", err);
       setError("Failed to load users from backend server.");
-      addToast("Could not connect to Railway API. Please check backend deployment.", "danger", "API Error");
     } finally {
       setLoading(false);
     }
