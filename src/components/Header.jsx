@@ -1,9 +1,11 @@
 import React from 'react';
-import { UserPlus, Bell, Search, Shield, ChevronRight } from 'lucide-react';
+import { UserPlus, Bell, Search, ChevronRight, LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { useUsers } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
 
 export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
-  const { setIsCreateModalOpen, users } = useUsers();
+  const { setIsCreateModalOpen } = useUsers();
+  const { user, isAuthenticated, logout, openLogin, openRegister } = useAuth();
 
   const getMenuTitle = () => {
     switch (activeMenu) {
@@ -56,6 +58,56 @@ export const Header = ({ activeMenu, searchGlobal, setSearchGlobal }) => {
           <UserPlus size={18} />
           <span>Add User</span>
         </button>
+
+        {/* Authentication Controls */}
+        {isAuthenticated ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '8px', paddingLeft: '12px', borderLeft: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <img 
+                src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.name || 'User')}`} 
+                alt={user?.name}
+                style={{ width: '34px', height: '34px', borderRadius: '50%', border: '2px solid var(--primary-color)', objectFit: 'cover' }}
+              />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', lineHeight: '1.2' }}>
+                  {user?.name}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  {user?.role || 'Admin'}
+                </span>
+              </div>
+            </div>
+
+            <button 
+              className="btn btn-secondary"
+              onClick={logout}
+              title="Logout"
+              style={{ padding: '8px 12px', fontSize: '0.85rem' }}
+            >
+              <LogOut size={16} />
+              <span>Logout</span>
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '8px', paddingLeft: '12px', borderLeft: '1px solid var(--border-color)' }}>
+            <button 
+              className="btn btn-secondary"
+              onClick={openLogin}
+              style={{ padding: '8px 14px', fontSize: '0.875rem' }}
+            >
+              <LogIn size={16} />
+              <span>Login</span>
+            </button>
+            <button 
+              className="btn btn-primary"
+              onClick={openRegister}
+              style={{ padding: '8px 14px', fontSize: '0.875rem' }}
+            >
+              <UserIcon size={16} />
+              <span>Sign Up</span>
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

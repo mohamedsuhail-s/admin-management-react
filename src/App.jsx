@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { UserManagementView } from './components/UserManagementView';
 import { ToastContainer } from './components/ToastContainer';
+import { AuthModal } from './components/AuthModal';
 
 const AppContent = () => {
   const [activeMenu, setActiveMenu] = useState('users'); // Default menu set to User Management
@@ -42,6 +44,9 @@ const AppContent = () => {
         )}
       </div>
 
+      {/* Auth Modal (Login / Sign Up) */}
+      <AuthModal />
+
       {/* Floating Notifications */}
       <ToastContainer />
     </div>
@@ -50,8 +55,10 @@ const AppContent = () => {
 
 export default function App() {
   return (
-    <UserProvider>
-      <AppContent />
-    </UserProvider>
+    <AuthProvider>
+      <UserProvider>
+        <AppContent />
+      </UserProvider>
+    </AuthProvider>
   );
 }

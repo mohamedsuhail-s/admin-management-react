@@ -11,10 +11,10 @@ const api = axios.create({
   },
 });
 
-// Request Interceptor: Attach bearer token if stored
+// Request Interceptor: Attach Bearer token if present
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -23,13 +23,14 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle global errors
+// Response Interceptor: Handle unauthenticated session
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Optional: Redirect to login or clear token if unauthorized
-      // localStorage.removeItem('token');
+      // Token is invalid or expired, clean stored credentials
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
     }
     return Promise.reject(error);
   }
